@@ -1,0 +1,15 @@
+CREATE OR REPLACE FUNCTION f_truncate_tables(_username text)
+  RETURNS void AS
+$func$
+BEGIN
+   RAISE NOTICE '%', 
+   -- EXECUTE  -- dangerous, test before you execute!
+  (SELECT 'TRUNCATE TABLE '
+       || string_agg(format('%I.%I', schemaname, tablename), ', ')
+       || ' CASCADE'
+   FROM   pg_tables
+   WHERE  tableowner = _username
+   AND    schemaname = 'public'
+   );
+END
+$func$ LANGUAGE plpgsql;
